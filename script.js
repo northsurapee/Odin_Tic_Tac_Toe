@@ -12,7 +12,29 @@ function Gameboard() {
         const boardWithCellMarks = board.map((row) => row.map((cell) => cell.getMark()))
         console.log(boardWithCellMarks)
     }
-    return {getBoard, selectCell, printBoard}
+    const isGameEnd = () => {
+        // Check row
+        for (let i = 0; i < 3; i++) {
+            if (board[i][0].getMark() != '-' && board[i][0].getMark() === board[i][1].getMark() && board[i][1].getMark() === board[i][2].getMark()) {
+                return true
+            }
+        }
+        // Check column
+        for (let j = 0; j < 3; j++) {
+            if (board[0][j].getMark() != '-' && board[0][j].getMark() === board[1][j].getMark() && board[1][j].getMark() === board[2][j].getMark()) {
+                return true
+            }
+        }
+        // Check diagonal
+        if (board[1][1].getMark() != '-' && board[0][0].getMark() === board[1][1].getMark() && board[1][1].getMark() === board[2][2].getMark()) {
+            return true
+        } else if (board[1][1].getMark() != '-' && board[2][0].getMark() === board[1][1].getMark() && board[1][1].getMark() === board[0][2].getMark()) {
+            return true
+        }
+        return false 
+    }
+    
+    return {getBoard, selectCell, printBoard, isGameEnd}
 }
 
 function Cell() {
@@ -51,6 +73,7 @@ function Player(
 function GameController() {
     const board = Gameboard()
     const player = Player()
+    let isGameEnd = false
 
     const printNewRound = () => {
         board.printBoard()
@@ -62,11 +85,12 @@ function GameController() {
         board.selectCell(row, column, player.getActivePlayer().mark)
         console.log(`${player.getActivePlayer().name} mark on (${row},${column})`)
 
-        // Is game end
-        
-    
-        player.switchPlayerTurn()
-        printNewRound()
+        if(!board.isGameEnd()) {
+            player.switchPlayerTurn()
+            printNewRound()
+        } else {
+            console.log(`Game end! The winner is ${player.getActivePlayer().name}!`)
+        }
     }
 
     // Initial play game message
